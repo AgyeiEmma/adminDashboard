@@ -23,8 +23,7 @@ import {
 } from "lucide-react";
 
 // API Base URL
-const API_BASE_URL =
-  "http://3.17.140.162:5600/auth-service/api/reviews/kyc-documents";
+const API_BASE_URL = `${import.meta.env.VITE_API_HOST}/reviews/kyc-documents`;
 
 // Transform dbResponse to match the UI structure
 const transformDbResponse = (dbData: any[]) => {

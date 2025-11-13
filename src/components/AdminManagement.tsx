@@ -69,7 +69,7 @@ const AdminManagement: React.FC = () => {
     setError(null);
     try {
       const response = await fetch(
-        "http://3.17.140.162:5600/auth-service/api/admin/admins",
+        `${import.meta.env.VITE_API_HOST}/admin/admins`,
         {
           method: "GET",
           headers: {
@@ -141,7 +141,7 @@ const AdminManagement: React.FC = () => {
   const getRoles = async () => {
     try {
       const response = await fetch(
-        "http://3.17.140.162:5600/auth-service/api/admin/roles",
+        `${import.meta.env.VITE_API_HOST}/admin/roles`,
         {
           method: "GET",
           headers: {
@@ -199,7 +199,7 @@ const AdminManagement: React.FC = () => {
       }
 
       const response = await fetch(
-        `http://3.17.140.162:5600/auth-service/api/admin/admins/${selectedAdmin.id}/role`,
+        `${import.meta.env.VITE_API_HOST}/admin/admins/${selectedAdmin.id}/role`,
         {
           method: "PUT",
           headers: {
@@ -243,7 +243,7 @@ const AdminManagement: React.FC = () => {
       }
 
       const response = await fetch(
-        `http://3.17.140.162:5600/auth-service/api/admin/admins/${selectedAdmin.id}`,
+        `${import.meta.env.VITE_API_HOST}/admin/admins/${selectedAdmin.id}`,
         {
           method: "DELETE",
           headers: {

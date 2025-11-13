@@ -4,7 +4,7 @@ export async function setAdminRole(
   roleId: string,
   token: string
 ) {
-  const response = await fetch(`/api/admin/admins/${adminId}/role`, {
+  const response = await fetch(`${ADMIN_API_BASE}/admins/${adminId}/role`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
@@ -21,8 +21,8 @@ export async function setAdminRole(
 }
 // src/services/roleService.ts
 
-const API_BASE = "http://3.17.140.162:5600/auth-service/api/publichauth";
-const ADMIN_API_BASE = "/api/admin";
+const API_HOST = "http://3.17.140.162:5600/auth-service/api";
+const ADMIN_API_BASE = `${API_HOST}/admin`;
 // Fetch all roles (GET /api/admin/roles)
 export async function getAllRoles(token: string) {
   const response = await fetch(`${ADMIN_API_BASE}/roles`, {
@@ -42,7 +42,7 @@ export async function createRole(
   roleData: { name: string; description?: string },
   token: string
 ) {
-  const response = await fetch(`${API_BASE}/roles`, {
+  const response = await fetch(`${ADMIN_API_BASE}/roles`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -61,7 +61,7 @@ export async function assignPermissions(
   permissions: string[],
   token: string
 ) {
-  const response = await fetch(`${API_BASE}/roles/${roleId}/permissions`, {
+  const response = await fetch(`${ADMIN_API_BASE}/roles/${roleId}/permissions`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",

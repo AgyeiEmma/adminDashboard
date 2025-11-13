@@ -255,7 +255,7 @@ export function FeeManagement() {
         throw new Error("No authentication token found. Please log in.");
       }
 
-      const url = "http://3.17.140.162:5600/auth-service/api/adminFees/fees";
+      const url = `${import.meta.env.VITE_API_HOST}/adminFees/fees`;
 
       const headers: Record<string, string> = {
         "Content-Type": "application/json",
@@ -365,7 +365,7 @@ export function FeeManagement() {
     setFeesError(null);
     try {
       const token = localStorage.getItem("authToken");
-      const url = "http://3.17.140.162:5600/auth-service/api/adminFees/fees";
+      const url = `${import.meta.env.VITE_API_HOST}/adminFees/fees`;
 
       const headers = {
         "Content-Type": "application/json",

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { createRole, getAllRoles, setAdminRole } from "../services/roleService";
+import { createRole, getAllRoles, setAdminRole, assignPermissions } from "../services/roleService";
 import {
   Card,
   CardContent,
@@ -75,6 +75,19 @@ export function RoleManagement() {
   const [setRoleError, setSetRoleError] = useState<string | null>(null);
   const [setRoleSuccess, setSetRoleSuccess] = useState(false);
 
+  const normalizeRoles = (list: any[]) =>
+    list.map((r: any) => ({
+      id: r.id || r.role_id || r.roleId || r.uuid || "",
+      name: r.name || r.role_name || "Unnamed Role",
+      description: r.description || "",
+      permissions: Array.isArray(r.permissions) ? r.permissions : [],
+      userCount: r.userCount || r.user_count || 0,
+      status: r.status || "active",
+      lastModified:
+        r.updated_at || r.updatedAt || new Date().toISOString(),
+      createdAt: r.created_at || r.createdAt || new Date().toISOString(),
+    }));
+
   // Handler for setting admin role (ensure roles is in scope)
   const handleSetRole = (user: any) => {
     setSetRoleUser(user);
@@ -117,7 +130,8 @@ export function RoleManagement() {
           localStorage.getItem("authToken");
         if (!token) throw new Error("Missing user token");
         const data = await getAllRoles(token);
-        setRoles(data.roles || data); // adapt if API returns { roles: [...] }
+        const rolesArr = Array.isArray(data) ? data : Array.isArray(data?.roles) ? data.roles : Array.isArray(data?.data) ? data.data : [];
+        setRoles(normalizeRoles(rolesArr));
       } catch (err: any) {
         setRolesError(err.message || "Failed to fetch roles");
       } finally {
@@ -230,7 +244,15 @@ export function RoleManagement() {
       setShowCreateRole(false);
       setNewRoleName("");
       setNewRoleDesc("");
-      // Optionally, refresh roles from backend here
+      try {
+        const token2 =
+          localStorage.getItem("accessToken") || localStorage.getItem("authToken");
+        if (token2) {
+          const data = await getAllRoles(token2);
+          const rolesArr = Array.isArray(data) ? data : Array.isArray(data?.roles) ? data.roles : Array.isArray(data?.data) ? data.data : [];
+          setRoles(normalizeRoles(rolesArr));
+        }
+      } catch {}
     } catch (err: any) {
       setCreateError(err.message || "Failed to create role");
     } finally {
@@ -810,6 +832,36 @@ function RoleDetailsModal({
   role: any;
   permissions: any[];
 }) {
+  const [selectedPerms, setSelectedPerms] = useState<string[]>(
+    Array.isArray(role.permissions) ? role.permissions : []
+  );
+  const [saveLoading, setSaveLoading] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
+  const [saveSuccess, setSaveSuccess] = useState(false);
+
+  const togglePerm = (id: string) => {
+    setSelectedPerms((prev) =>
+      prev.includes(id) ? prev.filter((p) => p !== id) : [...prev, id]
+    );
+  };
+
+  const handleSavePermissions = async () => {
+    setSaveLoading(true);
+    setSaveError(null);
+    setSaveSuccess(false);
+    try {
+      const token =
+        localStorage.getItem("accessToken") || localStorage.getItem("authToken");
+      if (!token) throw new Error("Missing user token");
+      await assignPermissions(role.id, selectedPerms, token);
+      setSaveSuccess(true);
+    } catch (err: any) {
+      setSaveError(err.message || "Failed to assign permissions");
+    } finally {
+      setSaveLoading(false);
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-2 gap-6">
@@ -838,45 +890,52 @@ function RoleDetailsModal({
         </div>
 
         <div>
-          <h4 className="font-medium mb-3">Permission Summary</h4>
-          <div className="space-y-2">
+          <h4 className="font-medium mb-3">Permissions</h4>
+          <div className="space-y-4 max-h-[320px] overflow-y-auto pr-2">
             {["Admin", "Compliance", "Treasury", "Risk", "General"].map(
-              (category) => {
-                const categoryPerms = permissions.filter(
-                  (p) => p.category === category
-                );
-                const assignedPerms = categoryPerms.filter((p) =>
-                  role.permissions.includes(p.id)
-                );
-                return (
-                  <div key={category} className="flex justify-between text-sm">
-                    <span className="text-gray-600">{category}:</span>
-                    <span className="font-medium">
-                      {assignedPerms.length}/{categoryPerms.length}
-                    </span>
+              (category) => (
+                <div key={category}>
+                  <h5 className="text-sm font-medium text-gray-700 mb-2">
+                    {category}
+                  </h5>
+                  <div className="grid grid-cols-1 gap-2">
+                    {permissions
+                      .filter((p) => p.category === category)
+                      .map((perm) => (
+                        <label
+                          key={perm.id}
+                          className="flex items-center gap-2 text-sm"
+                        >
+                          <input
+                            type="checkbox"
+                            checked={selectedPerms.includes(perm.id)}
+                            onChange={() => togglePerm(perm.id)}
+                          />
+                          <span>{perm.name}</span>
+                        </label>
+                      ))}
                   </div>
-                );
-              }
+                </div>
+              )
             )}
           </div>
-        </div>
-      </div>
-
-      <div>
-        <h4 className="font-medium mb-3">Detailed Permissions</h4>
-        <div className="grid grid-cols-2 gap-4">
-          {permissions.map((permission) => (
-            <div key={permission.id} className="flex items-center space-x-2">
-              <Checkbox
-                checked={role.permissions.includes(permission.id)}
-                disabled
-              />
-              <div>
-                <p className="text-sm font-medium">{permission.name}</p>
-                <p className="text-xs text-gray-500">{permission.category}</p>
-              </div>
+          {saveError && (
+            <div className="text-red-600 text-sm mt-3">{saveError}</div>
+          )}
+          {saveSuccess && (
+            <div className="text-green-600 text-sm mt-3">
+              Permissions updated.
             </div>
-          ))}
+          )}
+          <div className="flex justify-end mt-4">
+            <button
+              onClick={handleSavePermissions}
+              disabled={saveLoading}
+              className="px-4 py-2 rounded bg-blue-600 text-white disabled:opacity-60"
+            >
+              {saveLoading ? "Saving..." : "Save Permissions"}
+            </button>
+          </div>
         </div>
       </div>
     </div>
