@@ -159,6 +159,20 @@ export function FeeManagement() {
   const [loadingFees, setLoadingFees] = useState(false);
   const [feesError, setFeesError] = useState<string | null>(null);
   const [submittingGeneralFee, setSubmittingGeneralFee] = useState(false);
+  // Summary cards state (fetched from /fees/summary)
+  const [summary, setSummary] = useState<{
+    today_total_charges: number;
+    monthly_avg_charges: number;
+    total_general_fees: number;
+    total_custom_fees: number;
+  }>({
+    today_total_charges: 0,
+    monthly_avg_charges: 0,
+    total_general_fees: 0,
+    total_custom_fees: 0,
+  });
+  const [summaryLoading, setSummaryLoading] = useState(false);
+  const [summaryError, setSummaryError] = useState<string | null>(null);
 
   // Form states for General Fee
   const [generalFeeForm, setGeneralFeeForm] = useState({
@@ -169,7 +183,7 @@ export function FeeManagement() {
     amount: "",
     // store the service UUID (not the human-readable name) so we POST a valid service_id
     appliedTo: SERVICE_OPTIONS[0].id,
-    channel: "MOMO",
+    channel: "MOBILE_MONEY",
     status: "Active",
   });
 
@@ -238,7 +252,7 @@ export function FeeManagement() {
         : "active",
       channel: generalFeeForm.channel
         ? String(generalFeeForm.channel).toUpperCase()
-        : "MOMO",
+        : "MOBILE_MONEY",
     };
 
     // Log payload for debugging — remove in production
@@ -296,7 +310,7 @@ export function FeeManagement() {
         rate: "",
         amount: "",
         appliedTo: "Collection Service",
-        channel: "MOMO",
+        channel: "MOBILE_MONEY",
         status: "Active",
       });
     } catch (err) {
@@ -308,6 +322,9 @@ export function FeeManagement() {
       setSubmittingGeneralFee(false);
     }
   };
+
+
+
 
   const handleAddCustomFee = () => {
     const selectedUser = mockUsers.find((u) => u.id === customFeeForm.userId);
@@ -351,6 +368,7 @@ export function FeeManagement() {
     });
   };
 
+
   const handleDeleteGeneralFee = (id: string) => {
     setGeneralFees(generalFees.filter((fee) => fee.id !== id));
   };
@@ -360,6 +378,8 @@ export function FeeManagement() {
   };
 
   // Fetch fees from backend API and map to UI structure
+
+
   const fetchFees = async () => {
     setLoadingFees(true);
     setFeesError(null);
@@ -399,7 +419,7 @@ export function FeeManagement() {
         rate: item.rate ? parseFloat(item.rate) : 0,
         amount: item.amount ? parseFloat(item.amount) : 0,
         appliedTo: item.service_name || item.applied_to || "Unknown Service",
-        channel: item.channel || item.channels || "MOMO",
+        channel: item.channel || item.channels || "MOBILE_MONEY",
         status: item.status || "Active",
         createdAt: item.created_at
           ? new Date(item.created_at).toLocaleString()
@@ -416,8 +436,54 @@ export function FeeManagement() {
       setLoadingFees(false);
     }
   };
+
+  
+  // Fetch summary for the top cards
+  const fetchSummary = async () => {
+    setSummaryLoading(true);
+    setSummaryError(null);
+    try {
+      const token = localStorage.getItem("authToken");
+      const url =
+        "http://3.17.140.162:5600/auth-service/api/adminFees/fees/summary";
+      const headers: Record<string, string> = {
+        "Content-Type": "application/json",
+        ...(token && { Authorization: `Bearer ${token}` }),
+      };
+
+      console.log("fetchSummary request:", { url, headers, token });
+
+      const response = await axios.get(url, { headers });
+      const respData = response.data;
+
+      if (respData && respData.data) {
+        setSummary({
+          today_total_charges: Number(respData.data.today_total_charges) || 0,
+          monthly_avg_charges: Number(respData.data.monthly_avg_charges) || 0,
+          total_general_fees: Number(respData.data.total_general_fees) || 0,
+          total_custom_fees: Number(respData.data.total_custom_fees) || 0,
+        });
+      } else {
+        setSummary({
+          today_total_charges: 0,
+          monthly_avg_charges: 0,
+          total_general_fees: 0,
+          total_custom_fees: 0,
+        });
+      }
+    } catch (err) {
+      const errorMessage =
+        err instanceof Error ? err.message : "Failed to fetch summary";
+      setSummaryError(errorMessage);
+    } finally {
+      setSummaryLoading(false);
+    }
+  };
+
+
   useEffect(() => {
     fetchFees();
+    fetchSummary();
   }, []);
 
   const renderGeneralFeesTab = () => (
@@ -572,7 +638,7 @@ export function FeeManagement() {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="MOMO">MOMO</SelectItem>
+                    <SelectItem value="MOBILE_MONEY">MOBILE_MONEY</SelectItem>
                     <SelectItem value="WALLET">WALLET</SelectItem>
                     <SelectItem value="INSTANT">INSTANT</SelectItem>
                     <SelectItem value="FIX CYCLE">FIX CYCLE</SelectItem>
@@ -1017,10 +1083,10 @@ export function FeeManagement() {
             <div>
               <p className="text-sm text-gray-600">Total Fees Today</p>
               <p className="text-2xl text-gray-900 mt-1">
-                {formatCurrency(8450.75)}
+                {formatCurrency(summary.today_total_charges)}
               </p>
               <p className="text-sm text-green-600 mt-1">
-                +12.5% from yesterday
+                {summaryLoading ? "Loading..." : ""}
               </p>
             </div>
             <div className="p-3 rounded-lg bg-blue-100">
@@ -1034,7 +1100,7 @@ export function FeeManagement() {
             <div>
               <p className="text-sm text-gray-600">General Fees</p>
               <p className="text-2xl text-gray-900 mt-1">
-                {generalFees.length}
+                {summary.total_general_fees ?? generalFees.length}
               </p>
               <p className="text-sm text-gray-500 mt-1">Active rules</p>
             </div>
@@ -1048,7 +1114,9 @@ export function FeeManagement() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-600">Custom Fees</p>
-              <p className="text-2xl text-gray-900 mt-1">{customFees.length}</p>
+              <p className="text-2xl text-gray-900 mt-1">
+                {summary.total_custom_fees ?? customFees.length}
+              </p>
               <p className="text-sm text-gray-500 mt-1">User-specific rules</p>
             </div>
             <div className="p-3 rounded-lg bg-purple-100">
@@ -1060,11 +1128,13 @@ export function FeeManagement() {
         <Card className="p-4">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600">Monthly Revenue</p>
+              <p className="text-sm text-gray-600">Monthly Avg Charges</p>
               <p className="text-2xl text-gray-900 mt-1">
-                {formatCurrency(245890.5)}
+                {formatCurrency(summary.monthly_avg_charges)}
               </p>
-              <p className="text-sm text-green-600 mt-1">+18.3% this month</p>
+              <p className="text-sm text-green-600 mt-1">
+                {summaryLoading ? "Loading..." : ""}
+              </p>
             </div>
             <div className="p-3 rounded-lg bg-orange-100">
               <TrendingUp className="w-6 h-6 text-orange-600" />
