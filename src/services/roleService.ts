@@ -21,7 +21,7 @@ export async function setAdminRole(
 }
 // src/services/roleService.ts
 
-const API_BASE = "http://3.17.140.162:5600/auth-service/api/publichauth";
+const API_BASE = "https://3.17.140.162:5600/auth-service/api/publichauth";
 const ADMIN_API_BASE = "/api/admin";
 // Fetch all roles (GET /api/admin/roles)
 export async function getAllRoles(token: string) {

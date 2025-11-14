@@ -62,7 +62,7 @@ export default defineConfig({
     open: true,
     proxy: {
       "/api": {
-        target: "http://3.17.140.162:5600/auth-service/api",
+        target: "https://3.17.140.162:5600/auth-service/api",
         changeOrigin: true,
         secure: false,
       },
