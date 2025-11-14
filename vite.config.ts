@@ -62,7 +62,7 @@ export default defineConfig({
     open: true,
     proxy: {
       "/api": {
-        target: "https://gateway.ismartghana.com/auth-service/api",
+        target: "https://payadmin.ismartghana.com/auth-service/api",
         changeOrigin: true,
         secure: false,
       },

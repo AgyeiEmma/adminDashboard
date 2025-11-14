@@ -69,7 +69,7 @@ const AdminManagement: React.FC = () => {
     setError(null);
     try {
       const response = await fetch(
-        "https://gateway.ismartghana.com/auth-service/api/admin/admins",
+        "https://payadmin.ismartghana.com/auth-service/api/admin/admins",
         {
           method: "GET",
           headers: {
@@ -141,7 +141,7 @@ const AdminManagement: React.FC = () => {
   const getRoles = async () => {
     try {
       const response = await fetch(
-        "https://gateway.ismartghana.com/auth-service/api/admin/roles",
+        "https://payadmin.ismartghana.com/auth-service/api/admin/roles",
         {
           method: "GET",
           headers: {
@@ -199,7 +199,7 @@ const AdminManagement: React.FC = () => {
       }
 
       const response = await fetch(
-        `https://gateway.ismartghana.com/auth-service/api/admin/admins/${selectedAdmin.id}/role`,
+        `https://payadmin.ismartghana.com/auth-service/api/admin/admins/${selectedAdmin.id}/role`,
         {
           method: "PUT",
           headers: {
@@ -243,7 +243,7 @@ const AdminManagement: React.FC = () => {
       }
 
       const response = await fetch(
-        `https://gateway.ismartghana.com/auth-service/api/admin/admins/${selectedAdmin.id}`,
+        `https://payadmin.ismartghana.com/auth-service/api/admin/admins/${selectedAdmin.id}`,
         {
           method: "DELETE",
           headers: {
