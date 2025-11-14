@@ -24,7 +24,7 @@ import {
 
 // API Base URL
 const API_BASE_URL =
-  "http://3.17.140.162:5600/auth-service/api/reviews/kyc-documents";
+  "https://payadmin.ismartghana.com/auth-service/api/reviews/kyc-documents";
 
 // Transform dbResponse to match the UI structure
 const transformDbResponse = (dbData: any[]) => {
@@ -104,8 +104,6 @@ export function KYCVerification() {
       return fallback;
     }
   };
-
- 
 
   const fetchKYCApplications = async () => {
     setLoading(true);
@@ -417,7 +415,10 @@ export function KYCVerification() {
     }
   };
 
-  console.log("KYCVerification component rendered", selectedApplication && selectedApplication);
+  console.log(
+    "KYCVerification component rendered",
+    selectedApplication && selectedApplication
+  );
 
   return (
     <div className="space-y-6">

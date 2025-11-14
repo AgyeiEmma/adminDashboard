@@ -3,7 +3,7 @@
  * Handles HTTP requests with error handling and CORS support
  */
 
-const API_BASE_URL = "https://3.17.140.162:5600/auth-service/api";
+const API_BASE_URL = "https://payadmin.ismartghana.com/auth-service/api";
 
 /**
  * Generic API request handler with error handling

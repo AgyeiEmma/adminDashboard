@@ -269,7 +269,8 @@ export function FeeManagement() {
         throw new Error("No authentication token found. Please log in.");
       }
 
-      const url = "https://3.17.140.162:5600/auth-service/api/adminFees/fees";
+      const url =
+        "https://payadmin.ismartghana.com/auth-service/api/adminFees/fees";
 
       const headers: Record<string, string> = {
         "Content-Type": "application/json",
@@ -323,9 +324,6 @@ export function FeeManagement() {
     }
   };
 
-
-
-
   const handleAddCustomFee = () => {
     const selectedUser = mockUsers.find((u) => u.id === customFeeForm.userId);
     const now = new Date();
@@ -368,7 +366,6 @@ export function FeeManagement() {
     });
   };
 
-
   const handleDeleteGeneralFee = (id: string) => {
     setGeneralFees(generalFees.filter((fee) => fee.id !== id));
   };
@@ -379,13 +376,13 @@ export function FeeManagement() {
 
   // Fetch fees from backend API and map to UI structure
 
-
   const fetchFees = async () => {
     setLoadingFees(true);
     setFeesError(null);
     try {
       const token = localStorage.getItem("authToken");
-      const url = "https://3.17.140.162:5600/auth-service/api/adminFees/fees";
+      const url =
+        "https://payadmin.ismartghana.com/auth-service/api/adminFees/fees";
 
       const headers = {
         "Content-Type": "application/json",
@@ -437,7 +434,6 @@ export function FeeManagement() {
     }
   };
 
-  
   // Fetch summary for the top cards
   const fetchSummary = async () => {
     setSummaryLoading(true);
@@ -445,7 +441,7 @@ export function FeeManagement() {
     try {
       const token = localStorage.getItem("authToken");
       const url =
-        "https://3.17.140.162:5600/auth-service/api/adminFees/fees/summary";
+        "https://payadmin.ismartghana.com/auth-service/api/adminFees/fees/summary";
       const headers: Record<string, string> = {
         "Content-Type": "application/json",
         ...(token && { Authorization: `Bearer ${token}` }),
@@ -479,7 +475,6 @@ export function FeeManagement() {
       setSummaryLoading(false);
     }
   };
-
 
   useEffect(() => {
     fetchFees();
