@@ -22,7 +22,7 @@ export function LoginPage({ onLogin }: LoginPageProps) {
     setLoading(true);
     try {
       const response = await fetch(
-        "https://payadmin.ismartghana.com/auth-service/api/publicauth/admin/login",
+        " https://gateway.ismartghana.com/auth-service/api/publicauth/admin/login",
         {
           method: "POST",
           headers: {
