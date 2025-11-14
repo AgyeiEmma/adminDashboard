@@ -21,8 +21,7 @@ export async function setAdminRole(
 }
 // src/services/roleService.ts
 
-const API_BASE =
-  "https://payadmin.ismartghana.com/auth-service/api/publichauth";
+const API_BASE = "https://gateway.ismartghana.com/auth-service/api/publichauth";
 const ADMIN_API_BASE = "/api/admin";
 // Fetch all roles (GET /api/admin/roles)
 export async function getAllRoles(token: string) {

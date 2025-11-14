@@ -60,7 +60,7 @@ const RegisterAdmin: React.FC = () => {
     setSuccess(false);
     try {
       const response = await fetch(
-        "https://payadmin.ismartghana.com/auth-service/api/publicauth/admin/register",
+        "https://gateway.ismartghana.com/auth-service/api/publicauth/admin/register",
         {
           method: "POST",
           headers: {

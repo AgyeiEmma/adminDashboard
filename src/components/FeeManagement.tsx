@@ -270,7 +270,7 @@ export function FeeManagement() {
       }
 
       const url =
-        "https://payadmin.ismartghana.com/auth-service/api/adminFees/fees";
+        "https://gateway.ismartghana.com/auth-service/api/adminFees/fees";
 
       const headers: Record<string, string> = {
         "Content-Type": "application/json",
@@ -382,7 +382,7 @@ export function FeeManagement() {
     try {
       const token = localStorage.getItem("authToken");
       const url =
-        "https://payadmin.ismartghana.com/auth-service/api/adminFees/fees";
+        "https://gateway.ismartghana.com/auth-service/api/adminFees/fees";
 
       const headers = {
         "Content-Type": "application/json",
@@ -441,7 +441,7 @@ export function FeeManagement() {
     try {
       const token = localStorage.getItem("authToken");
       const url =
-        "https://payadmin.ismartghana.com/auth-service/api/adminFees/fees/summary";
+        "https://gateway.ismartghana.com/auth-service/api/adminFees/fees/summary";
       const headers: Record<string, string> = {
         "Content-Type": "application/json",
         ...(token && { Authorization: `Bearer ${token}` }),

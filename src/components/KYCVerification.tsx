@@ -24,7 +24,7 @@ import {
 
 // API Base URL
 const API_BASE_URL =
-  "https://payadmin.ismartghana.com/auth-service/api/reviews/kyc-documents";
+  "https://gateway.ismartghana.com/auth-service/api/reviews/kyc-documents";
 
 // Transform dbResponse to match the UI structure
 const transformDbResponse = (dbData: any[]) => {
