@@ -22,7 +22,7 @@ export function LoginPage({ onLogin }: LoginPageProps) {
     setLoading(true);
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_API_HOST}/publicauth/admin/login`,
+        `${import.meta.env.VITE_API_HOST}/api/publicauth/admin/login`,
         {
           method: "POST",
           headers: {

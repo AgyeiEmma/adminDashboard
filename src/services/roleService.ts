@@ -19,10 +19,10 @@ export async function setAdminRole(
   }
   return response.json();
 }
-// src/services/roleService.ts
-
-const API_HOST = "http://3.17.140.162:5600/auth-service/api";
-const ADMIN_API_BASE = `${API_HOST}/admin`;
+// API configuration
+const API_HOST = import.meta.env.VITE_API_HOST || 'http://localhost:3000';
+const API_BASE = import.meta.env.VITE_API_BASE_URL || '/api';
+const ADMIN_API_BASE = `${API_BASE}/admin`;
 // Fetch all roles (GET /api/admin/roles)
 export async function getAllRoles(token: string) {
   const response = await fetch(`${ADMIN_API_BASE}/roles`, {

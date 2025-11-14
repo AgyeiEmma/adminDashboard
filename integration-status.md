@@ -126,18 +126,23 @@ router.get("/business-risk-documents", tokenAuth({ required: true }), authorizeR
 router.get("/documents", tokenAuth({ required: true }), authorizeRole("Admin", "SuperAdmin"), adminReviewController.getAllDocuments);
 ```
 
-## Implemented but not Integrated
+## Implemented but needs Testing
 
-- **Role creation & permission assignment** – The backend supports dedicated role-management routes, but the frontend client posts to a misspelled `publichauth` base URL, so create/permission calls never hit the admin API.
+- **Role creation & permission assignment** – The role management functionality has been implemented with proper environment configuration:
+  - Added environment variable support for API base URLs
+  - Configured Vite to handle environment variables and proxy requests
+  - Updated role service to use the correct API endpoints
+  - Ready for testing with local backend
 
-```24:55:src/services/roleService.ts
-const API_BASE = "http://3.17.140.162:5600/auth-service/api/publichauth";
-...
-export async function createRole(
-  roleData: { name: string; description?: string },
-  token: string
-) {
-  const response = await fetch(`${API_BASE}/roles`, {
+```typescript
+// src/services/roleService.ts
+const API_HOST = import.meta.env.VITE_API_HOST || 'http://localhost:3000';
+const API_BASE = import.meta.env.VITE_API_BASE_URL || '/api';
+const ADMIN_API_BASE = `${API_BASE}/admin`;
+
+// Example role creation
+async function createRole(roleData, token) {
+  const response = await fetch(`${ADMIN_API_BASE}/roles`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -145,6 +150,8 @@ export async function createRole(
     },
     body: JSON.stringify(roleData),
   });
+  // ...
+}
 ```
 
 - **Custom fee configuration** – The backend exposes `/api/adminFees/fees/custom`, but the UI keeps custom fees in in-memory mock collections.
